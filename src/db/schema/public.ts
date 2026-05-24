@@ -10,7 +10,7 @@ export const cafes = pgTable("cafes", {
   addressLine2: text("address_line_2"),
   suburb: text("suburb").notNull(),
   state: text("state"),
-  postcode: text("postcode"),
+  postcode: text("postcode").notNull(),
   country: text("country").$type<CountryCode>().notNull(),
   userId: text("user_id")
     .notNull()

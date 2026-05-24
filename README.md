@@ -1,36 +1,102 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Roast
+
+Roast is a Next.js app for finding coffee shops and tracking the coffees they serve. Visitors can browse cafes, inspect tasting notes, compare body and brightness, read community reviews, and save favourite cafes or coffees. Signed-in cafe owners can manage cafe profiles and coffee lists from their account area.
+
+## What It Does
+
+- Public cafe directory at `/` with ranked cafe summaries.
+- Nearby browsing at `/nearby`, sorted from the request postcode supplied by Vercel's `x-vercel-ip-postal-code` header.
+- Cafe detail pages at `/cafes/[slug]` with address details, coffees, tasting-note chips, review forms, favourite actions, and body/brightness charts.
+- Email/password authentication through Better Auth.
+- Account dashboard at `/account` for favourites, reviews, and owned cafes.
+- Cafe management at `/account/cafes/[id]` for editing cafe details and adding or updating coffees.
+
+## Stack
+
+- Next.js 16 App Router with React 19 and TypeScript.
+- Server Actions in `src/app/actions.ts` for auth, favourites, reviews, cafes, and coffees.
+- Better Auth with the Drizzle adapter for authentication tables.
+- Drizzle ORM with PostgreSQL for application data.
+- Tailwind CSS 4, shadcn-style primitives, Base UI, Hugeicons, and Recharts for the interface.
+- Vercel Analytics and Speed Insights in the root layout.
+
+## Project Structure
+
+```text
+src/app/
+  (auth)/                sign-in and sign-up screens
+  (public)/              public browsing routes and shared public header
+    cafes/[slug]/        public cafe detail page
+    nearby/              postcode-aware nearby listing
+  (dash)/                signed-in account and cafe management routes
+  api/auth/[...all]/     Better Auth API route
+  actions.ts             Server Actions used by forms across the app
+  globals.css            Tailwind theme, tokens, and global styles
+
+src/components/
+  cafe-grid.tsx          shared cafe listing cards
+  coffee-dot-chart.tsx   body/brightness chart
+  elements/              app-specific form controls
+  ui/                    reusable UI primitives
+
+src/db/
+  index.ts               Drizzle client
+  schema/                public app schema and Better Auth schema
+
+src/lib/
+  auth.ts                Better Auth configuration
+  data.ts                query and view-shaping helpers
+  format.ts              slug, initials, location, and taste formatting
+  countries.ts           country select data
+  postcodes.ts           nearby sorting helpers
+```
+
+## Data Model
+
+The public app schema centers on cafes, coffees, reviews, and favourites:
+
+- `cafes`: cafe profile, address, country, and owning user.
+- `coffees`: coffees attached to a cafe, with notes plus intended body and brightness scores.
+- `coffee_reviews`: user reviews with overall score and optional body/brightness impressions.
+- `favourite_cafes` and `favourite_coffees`: saved items for signed-in users.
+
+Cafe slugs are currently derived from cafe names with `slugify`; they are not stored as separate database fields.
 
 ## Getting Started
 
-First, run the development server:
+Install dependencies:
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Create a local environment file with database connection strings:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+DATABASE_URL=postgres://...
+DATABASE_URL_MIGRATE=postgres://...
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Run the development server:
 
-## Learn More
+```bash
+pnpm dev
+```
 
-To learn more about Next.js, take a look at the following resources:
+Open [http://localhost:3000](http://localhost:3000).
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Push the current Drizzle schema to the database:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+```bash
+pnpm db:push
+```
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- `pnpm dev`: start the Next.js development server.
+- `pnpm build`: create a production build.
+- `pnpm start`: run the production server.
+- `pnpm lint`: run ESLint.
+- `pnpm db:push`: push Drizzle schema changes to PostgreSQL.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+There is no automated test script in the project yet.
