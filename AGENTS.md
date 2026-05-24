@@ -33,7 +33,7 @@ Roast is a coffee shop discovery and cafe management app. Public users browse ca
 
 ## Data And Routing Notes
 
-- Cafe slugs are derived from cafe names with `slugify`; they are not persisted in the database.
+- Cafe slugs are stored in `cafes.slug`, generated from cafe names with `slugify`, and used for public cafe routes.
 - Public cafe reads are cached with Next cache tags such as `cafes` and `cafe:${slug}`. Mutations revalidate affected paths and tags in `src/app/actions.ts`.
 - Nearby browsing depends on Vercel's `x-vercel-ip-postal-code` request header and falls back gracefully when unavailable.
 - Account and cafe management data must be scoped to the current authenticated user.
@@ -51,6 +51,11 @@ Environment variables used directly by this repo:
 
 - `DATABASE_URL`: runtime PostgreSQL connection for Drizzle.
 - `DATABASE_URL_MIGRATE`: migration/schema-push PostgreSQL connection for Drizzle Kit.
+- `BETTER_AUTH_SECRET`: production-grade secret used by Better Auth.
+- `BETTER_AUTH_URL`: canonical app URL used by Better Auth.
+- `BETTER_AUTH_TRUSTED_ORIGINS`: comma-separated trusted origins for Better Auth requests.
+- `RESEND_API_KEY`: API key used by delayed welcome-email workflows.
+- `RESEND_FROM_EMAIL`: verified Resend sender for welcome emails.
 
 ## Working Guidelines
 

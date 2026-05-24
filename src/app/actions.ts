@@ -3,12 +3,14 @@
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { refresh, revalidatePath, revalidateTag } from "next/cache";
-import { and, eq } from "drizzle-orm";
+import { and, eq, ne } from "drizzle-orm";
+import { start } from "workflow/api";
 import { db } from "@/db";
 import { auth } from "@/lib/auth";
 import type { CountryCode } from "@/lib/countries";
 import { getCafeSlugsByIds, getCurrentSession } from "@/lib/data";
 import { slugify } from "@/lib/format";
+import { sendWelcomeEmailAfterSignup } from "@/workflows/welcome-email";
 import {
   cafes,
   coffees,
@@ -43,6 +45,19 @@ function authErrorPath(pathname: string, message: string) {
   return `${pathname}?${params.toString()}`;
 }
 
+function sameSitePath(value: string, fallback = "/") {
+  if (!value.startsWith("/") || value.startsWith("//") || value.includes("\\")) {
+    return fallback;
+  }
+
+  try {
+    const url = new URL(value, "https://roast.local");
+    return `${url.pathname}${url.search}${url.hash}`;
+  } catch {
+    return fallback;
+  }
+}
+
 function revalidateCafePath(slug: string) {
   if (slug) {
     revalidatePath(`/cafes/${slug}`);
@@ -65,10 +80,32 @@ async function requireUser() {
   return session.user;
 }
 
+async function createUniqueCafeSlug(name: string, excludeCafeId?: number) {
+  const baseSlug = slugify(name) || "cafe";
+  const rows = excludeCafeId
+    ? await db
+        .select({ id: cafes.id, slug: cafes.slug })
+        .from(cafes)
+        .where(ne(cafes.id, excludeCafeId))
+    : await db.select({ id: cafes.id, slug: cafes.slug }).from(cafes);
+  const usedSlugs = new Set(rows.map((cafe) => cafe.slug));
+
+  if (!usedSlugs.has(baseSlug)) {
+    return baseSlug;
+  }
+
+  for (let suffix = 2; ; suffix += 1) {
+    const candidate = `${baseSlug}-${suffix}`;
+    if (!usedSlugs.has(candidate)) {
+      return candidate;
+    }
+  }
+}
+
 export async function signInWithEmail(formData: FormData) {
   const email = readString(formData, "email");
   const password = readString(formData, "password");
-  const next = readString(formData, "next") || "/";
+  const next = sameSitePath(readString(formData, "next"), "/account");
 
   try {
     await auth.api.signInEmail({
@@ -94,6 +131,12 @@ export async function signUpWithEmail(formData: FormData) {
     });
   } catch {
     redirect(authErrorPath("/sign-up", "That account could not be created."));
+  }
+
+  try {
+    await start(sendWelcomeEmailAfterSignup, [{ name, email }]);
+  } catch (error) {
+    console.error("Failed to start welcome email workflow", error);
   }
 
   redirect("/account");
@@ -202,11 +245,13 @@ export async function createCoffeeReview(formData: FormData) {
 export async function createCafe(formData: FormData) {
   const user = await requireUser();
   const name = readString(formData, "name");
+  const slug = await createUniqueCafeSlug(name);
 
   const [created] = await db
     .insert(cafes)
     .values({
       name,
+      slug,
       description: readString(formData, "description"),
       image: readString(formData, "image") || null,
       addressLine1: readString(formData, "addressLine1"),
@@ -230,7 +275,7 @@ export async function updateCafe(formData: FormData) {
   const user = await requireUser();
   const cafeId = readInt(formData, "cafeId");
   const [ownedCafe] = await db
-    .select({ id: cafes.id, name: cafes.name })
+    .select({ id: cafes.id, slug: cafes.slug })
     .from(cafes)
     .where(and(eq(cafes.id, cafeId), eq(cafes.userId, user.id)))
     .limit(1);
@@ -239,10 +284,14 @@ export async function updateCafe(formData: FormData) {
     redirect("/account");
   }
 
+  const name = readString(formData, "name");
+  const slug = await createUniqueCafeSlug(name, cafeId);
+
   await db
     .update(cafes)
     .set({
-      name: readString(formData, "name"),
+      name,
+      slug,
       description: readString(formData, "description"),
       image: readString(formData, "image") || null,
       addressLine1: readString(formData, "addressLine1"),
@@ -257,8 +306,8 @@ export async function updateCafe(formData: FormData) {
   revalidatePath("/");
   revalidatePath("/account");
   revalidateManagedCafePath(cafeId);
-  revalidateCafePath(slugify(ownedCafe.name));
-  revalidateCafePath(slugify(readString(formData, "name")));
+  revalidateCafePath(ownedCafe.slug);
+  revalidateCafePath(slug);
   revalidateTag("cafes", "max");
 }
 
@@ -266,7 +315,7 @@ export async function createCoffee(formData: FormData) {
   const user = await requireUser();
   const cafeId = readInt(formData, "cafeId");
   const [ownedCafe] = await db
-    .select({ id: cafes.id, name: cafes.name })
+    .select({ id: cafes.id, slug: cafes.slug })
     .from(cafes)
     .where(and(eq(cafes.id, cafeId), eq(cafes.userId, user.id)))
     .limit(1);
@@ -286,7 +335,7 @@ export async function createCoffee(formData: FormData) {
 
   revalidatePath("/account");
   revalidateManagedCafePath(cafeId);
-  revalidateCafePath(slugify(ownedCafe.name));
+  revalidateCafePath(ownedCafe.slug);
   revalidateTag("cafes", "max");
 
   redirect(`/account/cafes/${cafeId}`);
@@ -297,7 +346,7 @@ export async function updateCoffee(formData: FormData) {
   const coffeeId = readInt(formData, "coffeeId");
   const cafeId = readInt(formData, "cafeId");
   const [ownedCafe] = await db
-    .select({ id: cafes.id, name: cafes.name })
+    .select({ id: cafes.id, slug: cafes.slug })
     .from(cafes)
     .innerJoin(coffees, eq(coffees.cafe, cafes.id))
     .where(
@@ -326,6 +375,6 @@ export async function updateCoffee(formData: FormData) {
 
   revalidatePath("/account");
   revalidateManagedCafePath(cafeId);
-  revalidateCafePath(slugify(ownedCafe.name));
+  revalidateCafePath(ownedCafe.slug);
   revalidateTag("cafes", "max");
 }

@@ -1,10 +1,11 @@
-import { integer, pgTable, serial, text } from "drizzle-orm/pg-core";
+import { integer, pgTable, primaryKey, serial, text } from "drizzle-orm/pg-core";
 import type { CountryCode } from "@/lib/countries";
 import { user } from "./better-auth";
 
 export const cafes = pgTable("cafes", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
+  slug: text("slug").notNull().unique(),
   description: text("description"),
   image: text("image"),
   addressLine1: text("address_line_1").notNull(),
@@ -44,20 +45,38 @@ export const coffeeReviews = pgTable("coffee_reviews", {
   brightness: integer("brightness"),
 });
 
-export const favouriteCafes = pgTable("favourite_cafes", {
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  cafeId: integer("cafe_id")
-    .notNull()
-    .references(() => cafes.id, { onDelete: "cascade" }),
-});
+export const favouriteCafes = pgTable(
+  "favourite_cafes",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    cafeId: integer("cafe_id")
+      .notNull()
+      .references(() => cafes.id, { onDelete: "cascade" }),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.userId, table.cafeId],
+      name: "favourite_cafes_user_id_cafe_id_pk",
+    }),
+  ],
+);
 
-export const favouriteCoffees = pgTable("favourite_coffees", {
-  userId: text("user_id")
-    .notNull()
-    .references(() => user.id, { onDelete: "cascade" }),
-  coffeeId: integer("coffee_id")
-    .notNull()
-    .references(() => coffees.id),
-});
+export const favouriteCoffees = pgTable(
+  "favourite_coffees",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id, { onDelete: "cascade" }),
+    coffeeId: integer("coffee_id")
+      .notNull()
+      .references(() => coffees.id),
+  },
+  (table) => [
+    primaryKey({
+      columns: [table.userId, table.coffeeId],
+      name: "favourite_coffees_user_id_coffee_id_pk",
+    }),
+  ],
+);

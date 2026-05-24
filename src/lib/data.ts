@@ -3,7 +3,7 @@ import { headers } from "next/headers";
 import { and, desc, eq, inArray } from "drizzle-orm";
 import { db } from "@/db";
 import { auth } from "@/lib/auth";
-import { clampTaste, formatLocation, slugify } from "@/lib/format";
+import { clampTaste, formatLocation } from "@/lib/format";
 import { postcodeOffset } from "@/lib/postcodes";
 import {
   cafes,
@@ -71,7 +71,6 @@ function shapeCafes(
 
     return {
       ...cafe,
-      slug: slugify(cafe.name),
       location: formatLocation(cafe),
       coffeeCount: cafeCoffees.length,
       avgScore: average(cafeCoffees.map((coffee) => coffee.avgScore)),
@@ -137,10 +136,10 @@ export async function getCafePageData(slug: string) {
 
 export async function getCafeStaticParams() {
   const rows = await db
-    .select({ name: cafes.name })
+    .select({ slug: cafes.slug })
     .from(cafes)
     .orderBy(cafes.name);
-  return rows.map((cafe) => ({ slug: slugify(cafe.name) }));
+  return rows;
 }
 
 export async function getCurrentSession() {
@@ -180,19 +179,16 @@ export async function getAccountData() {
 
   return {
     user: session.user,
-    ownedCafes: owned.map((cafe) => ({ ...cafe, slug: slugify(cafe.name) })),
-    favouriteCafes: cafeFavourites.map(({ cafe }) => ({
-      ...cafe,
-      slug: slugify(cafe.name),
-    })),
+    ownedCafes: owned,
+    favouriteCafes: cafeFavourites.map(({ cafe }) => cafe),
     favouriteCoffees: coffeeFavourites.map(({ coffee, cafe }) => ({
       coffee,
-      cafe: { ...cafe, slug: slugify(cafe.name) },
+      cafe,
     })),
     reviews: reviews.map(({ review, coffee, cafe }) => ({
       review,
       coffee,
-      cafe: { ...cafe, slug: slugify(cafe.name) },
+      cafe,
     })),
   };
 }
@@ -226,7 +222,7 @@ export async function getManagedCafeData(id: number) {
 
   return {
     user: session.user,
-    cafe: { ...ownedCafe, slug: slugify(ownedCafe.name) },
+    cafe: ownedCafe,
     coffees: cafeCoffees,
   };
 }
@@ -237,11 +233,11 @@ export async function getCafeSlugsByIds(ids: number[]) {
   }
 
   const rows = await db
-    .select({ id: cafes.id, name: cafes.name })
+    .select({ id: cafes.id, slug: cafes.slug })
     .from(cafes)
     .where(inArray(cafes.id, ids));
 
-  return new Map(rows.map((cafe) => [cafe.id, slugify(cafe.name)]));
+  return new Map(rows.map((cafe) => [cafe.id, cafe.slug]));
 }
 
 export async function isCafeFavourited(userId: string, cafeId: number) {

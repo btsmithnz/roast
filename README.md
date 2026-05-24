@@ -16,6 +16,7 @@ Roast is a Next.js app for finding coffee shops and tracking the coffees they se
 - Next.js 16 App Router with React 19 and TypeScript.
 - Server Actions in `src/app/actions.ts` for auth, favourites, reviews, cafes, and coffees.
 - Better Auth with the Drizzle adapter for authentication tables.
+- Vercel Workflow plus Resend for delayed lifecycle email.
 - Drizzle ORM with PostgreSQL for application data.
 - Tailwind CSS 4, shadcn-style primitives, Base UI, Hugeicons, and Recharts for the interface.
 - Vercel Analytics and Speed Insights in the root layout.
@@ -55,12 +56,12 @@ src/lib/
 
 The public app schema centers on cafes, coffees, reviews, and favourites:
 
-- `cafes`: cafe profile, address, country, and owning user.
+- `cafes`: cafe profile, unique slug, address, country, and owning user.
 - `coffees`: coffees attached to a cafe, with notes plus intended body and brightness scores.
 - `coffee_reviews`: user reviews with overall score and optional body/brightness impressions.
 - `favourite_cafes` and `favourite_coffees`: saved items for signed-in users.
 
-Cafe slugs are currently derived from cafe names with `slugify`; they are not stored as separate database fields.
+Cafe slugs are stored in the database and generated from cafe names with `slugify`.
 
 ## Getting Started
 
@@ -70,11 +71,16 @@ Install dependencies:
 pnpm install
 ```
 
-Create a local environment file with database connection strings:
+Create a local environment file with database and auth settings:
 
 ```bash
 DATABASE_URL=postgres://...
 DATABASE_URL_MIGRATE=postgres://...
+BETTER_AUTH_SECRET=...
+BETTER_AUTH_URL=http://localhost:3000
+BETTER_AUTH_TRUSTED_ORIGINS=http://localhost:3000
+RESEND_API_KEY=...
+RESEND_FROM_EMAIL="Roast <welcome@example.com>"
 ```
 
 Run the development server:
