@@ -17,6 +17,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { getAccountData } from "@/lib/data";
 import { initials } from "@/lib/format";
+import { cn } from "@/lib/utils";
 import Form from "next/form";
 import { SubmitButton } from "@/components/elements/submit-button";
 
@@ -124,6 +125,11 @@ async function AccountContent() {
             <TextField label="State" name="state" />
             <TextField label="Postcode" name="postcode" required />
             <CountrySelect required />
+            <TextField
+              label="Image src"
+              name="image"
+              className="md:col-span-2"
+            />
             <Field className="gap-1 md:col-span-2">
               <FieldLabel className="text-stone-700">Description</FieldLabel>
               <Textarea
@@ -243,6 +249,7 @@ function TextField({
   value,
   min,
   max,
+  className,
 }: {
   label: string;
   name: string;
@@ -251,9 +258,10 @@ function TextField({
   value?: string;
   min?: number;
   max?: number;
+  className?: string;
 }) {
   return (
-    <Field className="gap-1">
+    <Field className={cn("gap-1", className)}>
       <FieldLabel className="text-stone-700">{label}</FieldLabel>
       <Input
         defaultValue={value}

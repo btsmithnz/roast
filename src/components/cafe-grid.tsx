@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { CafeIcon, Location01Icon } from "@hugeicons/core-free-icons";
 import { AppIcon } from "@/components/app-icon";
 import { buttonVariants } from "@/components/ui/button";
@@ -11,6 +12,7 @@ type CafeGridCafe = Pick<
   | "name"
   | "slug"
   | "description"
+  | "image"
   | "location"
   | "avgScore"
   | "coffeeCount"
@@ -60,9 +62,7 @@ export function CafeGrid({
           key={cafe.id}
         >
           <div className="mb-5 flex items-start justify-between gap-4">
-            <div className="grid size-14 place-items-center rounded-lg bg-stone-950 text-lg font-bold text-white">
-              {cafe.name.slice(0, 2).toUpperCase()}
-            </div>
+            <CafeCardImage image={cafe.image} name={cafe.name} />
             <span className="rounded-full bg-rose-100 px-3 py-1 text-sm font-semibold text-rose-800">
               {cafe.avgScore ? `${Math.round(cafe.avgScore)}/10` : "new"}
             </span>
@@ -89,6 +89,34 @@ export function CafeGrid({
           </div>
         </Link>
       ))}
+    </div>
+  );
+}
+
+function CafeCardImage({
+  image,
+  name,
+}: {
+  image: string | null;
+  name: string;
+}) {
+  if (!image) {
+    return (
+      <div className="grid size-14 place-items-center rounded-lg bg-stone-950 text-lg font-bold text-white">
+        {name.slice(0, 2).toUpperCase()}
+      </div>
+    );
+  }
+
+  return (
+    <div className="relative size-14 overflow-hidden rounded-lg bg-stone-100">
+      <Image
+        alt=""
+        className="object-cover"
+        fill
+        sizes="56px"
+        src={image}
+      />
     </div>
   );
 }

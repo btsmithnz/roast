@@ -137,6 +137,12 @@ async function ManagedCafeContent({ id }: { id: string }) {
               value={data.cafe.postcode ?? ""}
             />
             <CountrySelect required value={data.cafe.country} />
+            <TextField
+              className="md:col-span-2"
+              label="Image src"
+              name="image"
+              value={data.cafe.image ?? ""}
+            />
             <TextareaField
               className="md:col-span-2"
               label="Description"
@@ -261,17 +267,29 @@ function TextField({
   label,
   name,
   required,
+  type = "text",
   value,
+  className,
 }: {
   label: string;
   name: string;
   required?: boolean;
+  type?: string;
   value?: string;
+  className?: string;
 }) {
+  const inputKey = `${name}:${value ?? ""}`;
+
   return (
-    <Field className="gap-1">
+    <Field className={cn("gap-1", className)}>
       <FieldLabel className="text-stone-700">{label}</FieldLabel>
-      <Input defaultValue={value} name={name} required={required} type="text" />
+      <Input
+        defaultValue={value}
+        key={inputKey}
+        name={name}
+        required={required}
+        type={type}
+      />
     </Field>
   );
 }
@@ -289,10 +307,17 @@ function TextareaField({
   value: string;
   className?: string;
 }) {
+  const textareaKey = `${name}:${value}`;
+
   return (
     <Field className={cn("gap-1", className)}>
       <FieldLabel className="text-stone-700">{label}</FieldLabel>
-      <Textarea defaultValue={value} name={name} required={required} />
+      <Textarea
+        defaultValue={value}
+        key={textareaKey}
+        name={name}
+        required={required}
+      />
     </Field>
   );
 }

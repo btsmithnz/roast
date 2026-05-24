@@ -1,4 +1,5 @@
 import Link from "next/link";
+import Image from "next/image";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
 import {
@@ -17,7 +18,6 @@ import { AppIcon } from "@/components/app-icon";
 import { ScoreSlider } from "@/components/elements/score-slider";
 import { CoffeeDotChart } from "@/components/coffee-dot-chart";
 import { SkeletonBlock } from "@/components/skeletons";
-import { Button } from "@/components/ui/button";
 import { Field, FieldLabel } from "@/components/ui/field";
 import { Textarea } from "@/components/ui/textarea";
 import {
@@ -104,30 +104,44 @@ async function CafeHeader({ slug }: { slug: string }) {
           {cafe.description}
         </p>
       </div>
-      <div className="rounded-lg border border-stone-950/10 bg-stone-950 p-6 text-stone-50 shadow-xl shadow-stone-950/15 sm:p-8">
-        <div className="mb-12 flex items-center justify-between">
-          <span className="grid size-12 place-items-center rounded-lg bg-white/10">
-            <AppIcon icon={CoffeeBeansIcon} size={24} />
-          </span>
-          <Suspense
-            fallback={<SkeletonBlock className="h-10 w-32 bg-white/10" />}
-          >
-            <CafeFavouriteButton cafe={cafe} />
-          </Suspense>
+      <div className="overflow-hidden rounded-lg border border-stone-950/10 bg-stone-950 text-stone-50 shadow-xl shadow-stone-950/15">
+        {cafe.image ? (
+          <div className="relative min-h-72 bg-stone-800 sm:min-h-80">
+            <Image
+              alt={`${cafe.name} cafe`}
+              className="object-cover"
+              fill
+              priority
+              sizes="(max-width: 1024px) 100vw, 46vw"
+              src={cafe.image}
+            />
+          </div>
+        ) : null}
+        <div className="p-6 sm:p-8">
+          <div className="mb-12 flex items-center justify-between">
+            <span className="grid size-12 place-items-center rounded-lg bg-white/10">
+              <AppIcon icon={CoffeeBeansIcon} size={24} />
+            </span>
+            <Suspense
+              fallback={<SkeletonBlock className="h-10 w-32 bg-white/10" />}
+            >
+              <CafeFavouriteButton cafe={cafe} />
+            </Suspense>
+          </div>
+          <p className="font-heading text-3xl leading-tight">
+            {cafe.addressLine1}
+            {cafe.addressLine2 ? (
+              <>
+                <br />
+                {cafe.addressLine2}
+              </>
+            ) : null}
+          </p>
+          <p className="mt-4 text-sm leading-6 text-stone-300">
+            Coffee pages show the cafe&apos;s intended body and brightness in
+            rose, then review averages in blue as the community catches up.
+          </p>
         </div>
-        <p className="font-heading text-3xl leading-tight">
-          {cafe.addressLine1}
-          {cafe.addressLine2 ? (
-            <>
-              <br />
-              {cafe.addressLine2}
-            </>
-          ) : null}
-        </p>
-        <p className="mt-4 text-sm leading-6 text-stone-300">
-          Coffee pages show the cafe&apos;s intended body and brightness in
-          rose, then review averages in blue as the community catches up.
-        </p>
       </div>
     </section>
   );

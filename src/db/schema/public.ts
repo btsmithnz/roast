@@ -6,6 +6,7 @@ export const cafes = pgTable("cafes", {
   id: serial("id").primaryKey(),
   name: text("name").notNull(),
   description: text("description"),
+  image: text("image"),
   addressLine1: text("address_line_1").notNull(),
   addressLine2: text("address_line_2"),
   suburb: text("suburb").notNull(),

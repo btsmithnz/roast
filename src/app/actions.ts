@@ -214,6 +214,7 @@ export async function createCafe(formData: FormData) {
     .values({
       name,
       description: readString(formData, "description"),
+      image: readString(formData, "image") || null,
       addressLine1: readString(formData, "addressLine1"),
       addressLine2: readString(formData, "addressLine2") || null,
       suburb: readString(formData, "suburb"),
@@ -249,6 +250,7 @@ export async function updateCafe(formData: FormData) {
     .set({
       name: readString(formData, "name"),
       description: readString(formData, "description"),
+      image: readString(formData, "image") || null,
       addressLine1: readString(formData, "addressLine1"),
       addressLine2: readString(formData, "addressLine2") || null,
       suburb: readString(formData, "suburb"),

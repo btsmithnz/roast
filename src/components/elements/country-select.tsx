@@ -21,11 +21,14 @@ export function CountrySelect({
   required?: boolean;
   value?: string;
 }) {
+  const defaultValue = value ?? DEFAULT_COUNTRY_CODE;
+
   return (
     <Field className="gap-1">
       <FieldLabel className="text-stone-700">{label}</FieldLabel>
       <Select
-        defaultValue={value ?? DEFAULT_COUNTRY_CODE}
+        defaultValue={defaultValue}
+        key={`${name}:${defaultValue}`}
         name={name}
         required={required}
         items={supportedCountries}
