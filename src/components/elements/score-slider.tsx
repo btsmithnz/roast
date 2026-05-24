@@ -34,12 +34,10 @@ export function ScoreSlider({
   return (
     <Field className={cn("gap-3", className)}>
       <div className="flex items-center justify-between gap-3">
-        <FieldTitle className="text-sm font-semibold text-stone-800" id={id}>
+        <FieldTitle className="text-sm font-semibold" id={id}>
           {label}
         </FieldTitle>
-        <output
-          className="min-w-10 rounded-full bg-stone-950 px-2.5 py-1 text-center text-xs font-semibold text-white"
-        >
+        <output className="min-w-10 rounded-full bg-primary px-2.5 py-1 text-center text-xs font-semibold text-primary-foreground">
           {value}/10
         </output>
       </div>
@@ -54,7 +52,7 @@ export function ScoreSlider({
         value={[value]}
       />
       <input name={name} type="hidden" value={value} />
-      <div className="flex items-start justify-between gap-3 text-xs font-medium text-stone-500">
+      <div className="flex items-start justify-between gap-3 text-xs font-medium text-muted-foreground">
         <span>{fromLabel}</span>
         <span className="text-right">{toLabel}</span>
       </div>

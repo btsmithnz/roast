@@ -17,8 +17,8 @@ import {
 import { AppIcon } from "@/components/app-icon";
 import { ScoreSlider } from "@/components/elements/score-slider";
 import { CoffeeDotChart } from "@/components/coffee-dot-chart";
-import { SkeletonBlock } from "@/components/skeletons";
 import { Field, FieldLabel } from "@/components/ui/field";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import {
   getCafePageData,
@@ -76,9 +76,9 @@ async function CafeHeader({ slug }: { slug: string }) {
 
   return (
     <section className="mb-8 grid gap-6 lg:grid-cols-[1.08fr_.92fr]">
-      <div className="rounded-lg border border-stone-950/10 bg-white p-6 shadow-sm sm:p-8">
+      <div className="rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
         <Link
-          className="mb-6 inline-flex text-sm font-semibold text-stone-600 underline-offset-4 hover:text-stone-950 hover:underline"
+          className="mb-6 inline-flex text-sm font-semibold text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
           href="/"
         >
           Back to cafes
@@ -88,25 +88,25 @@ async function CafeHeader({ slug }: { slug: string }) {
             <AppIcon icon={Location01Icon} size={15} />
             {cafe.location}
           </span>
-          <span className="rounded-full bg-rose-100 px-3 py-1 text-sm font-semibold text-rose-800">
+          <span className="rounded-full bg-muted px-3 py-1 text-sm font-semibold text-muted-foreground">
             {cafe.coffeeCount} coffees
           </span>
           {cafe.avgScore ? (
-            <span className="rounded-full bg-sky-100 px-3 py-1 text-sm font-semibold text-sky-900">
+            <span className="rounded-full bg-accent px-3 py-1 text-sm font-semibold text-accent-foreground">
               {Math.round(cafe.avgScore)}/10 avg
             </span>
           ) : null}
         </div>
-        <h1 className="max-w-3xl text-5xl leading-none text-stone-950 sm:text-6xl">
+        <h1 className="max-w-3xl text-5xl leading-[0.95] font-semibold tracking-tight sm:text-6xl">
           {cafe.name}
         </h1>
-        <p className="mt-6 max-w-2xl text-lg leading-8 text-stone-700">
+        <p className="mt-6 max-w-2xl text-lg leading-8 text-muted-foreground">
           {cafe.description}
         </p>
       </div>
-      <div className="overflow-hidden rounded-lg border border-stone-950/10 bg-stone-950 text-stone-50 shadow-xl shadow-stone-950/15">
+      <div className="overflow-hidden rounded-2xl border bg-primary text-primary-foreground shadow-xl shadow-primary/20">
         {cafe.image ? (
-          <div className="relative min-h-72 bg-stone-800 sm:min-h-80">
+          <div className="relative min-h-72 bg-primary/80 sm:min-h-80">
             <Image
               alt={`${cafe.name} cafe`}
               className="object-cover"
@@ -119,11 +119,11 @@ async function CafeHeader({ slug }: { slug: string }) {
         ) : null}
         <div className="p-6 sm:p-8">
           <div className="mb-12 flex items-center justify-between">
-            <span className="grid size-12 place-items-center rounded-lg bg-white/10">
+            <span className="grid size-12 place-items-center rounded-xl bg-primary-foreground/10">
               <AppIcon icon={CoffeeBeansIcon} size={24} />
             </span>
             <Suspense
-              fallback={<SkeletonBlock className="h-10 w-32 bg-white/10" />}
+              fallback={<Skeleton className="h-8 w-32 rounded-full bg-primary-foreground/10" />}
             >
               <CafeFavouriteButton cafe={cafe} />
             </Suspense>
@@ -137,7 +137,7 @@ async function CafeHeader({ slug }: { slug: string }) {
               </>
             ) : null}
           </p>
-          <p className="mt-4 text-sm leading-6 text-stone-300">
+          <p className="mt-4 text-sm leading-6 text-primary-foreground/70">
             Coffee pages show the cafe&apos;s intended body and brightness in
             rose, then review averages in blue as the community catches up.
           </p>
@@ -159,10 +159,8 @@ async function CafeFavouriteButton({ cafe }: { cafe: CafeView }) {
       <input name="slug" type="hidden" value={cafe.slug} />
       <SubmitButton
         icon={<FavouriteHeart filled={favourited} />}
-        className={cn(
-          "bg-white text-stone-950 hover:bg-stone-100",
-          favourited && "bg-rose-100 text-rose-800 hover:bg-rose-100",
-        )}
+        variant="secondary"
+        className={cn(favourited && "bg-accent text-accent-foreground hover:bg-accent/90")}
       >
         {favourited ? "Saved" : "Save cafe"}
       </SubmitButton>
@@ -181,10 +179,10 @@ async function CafeCoffees({ slug }: { slug: string }) {
     <section>
       <div className="mb-6 flex items-end justify-between gap-4">
         <div>
-          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-rose-700">
+          <p className="mb-2 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
             Coffee list
           </p>
-          <h2 className="text-4xl text-stone-950">What they are pouring</h2>
+          <h2 className="text-4xl font-semibold tracking-tight">What they are pouring</h2>
         </div>
       </div>
       <div className="grid gap-5">
@@ -193,7 +191,7 @@ async function CafeCoffees({ slug }: { slug: string }) {
             <CoffeeCard coffee={coffee} key={coffee.id} slug={cafe.slug} />
           ))
         ) : (
-          <div className="rounded-lg border border-dashed border-stone-950/20 bg-white/70 p-8 text-stone-600">
+          <div className="rounded-2xl border border-dashed bg-card/60 p-8 text-muted-foreground">
             This cafe has not listed coffees yet.
           </div>
         )}
@@ -210,12 +208,12 @@ async function CoffeeCard({
   slug: string;
 }) {
   return (
-    <article className="grid gap-6 rounded-lg border border-stone-950/10 bg-white p-5 shadow-sm lg:grid-cols-[1fr_260px] lg:p-6">
+    <article className="grid gap-6 rounded-2xl border bg-card p-5 shadow-sm lg:grid-cols-[1fr_260px] lg:p-6">
       <div>
         <div className="mb-4 flex flex-wrap items-center gap-2">
           {coffee.notes.map((note) => (
             <span
-              className="rounded-full bg-amber-100 px-3 py-1 text-sm font-semibold text-amber-950"
+              className="rounded-full bg-secondary px-3 py-1 text-sm font-semibold text-secondary-foreground"
               key={note}
             >
               {note}
@@ -224,30 +222,30 @@ async function CoffeeCard({
         </div>
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <h3 className="text-3xl text-stone-950">{coffee.name}</h3>
-            <p className="mt-3 max-w-2xl text-sm leading-6 text-stone-600">
+            <h3 className="text-3xl font-semibold tracking-tight">{coffee.name}</h3>
+            <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">
               {coffee.description}
             </p>
           </div>
-          <Suspense fallback={<SkeletonBlock className="h-9 w-32" />}>
+          <Suspense fallback={<Skeleton className="h-8 w-32 rounded-full" />}>
             <CoffeeFavouriteButton coffeeId={coffee.id} slug={slug} />
           </Suspense>
         </div>
         <div className="mt-6 grid gap-4 lg:grid-cols-2">
           <Form
             action={createCoffeeReview}
-            className="rounded-lg border border-stone-950/10 bg-stone-50 p-4"
+            className="rounded-2xl border bg-muted/50 p-4"
           >
-            <div className="mb-3 flex items-center gap-2 font-semibold text-stone-950">
+            <div className="mb-3 flex items-center gap-2 font-semibold">
               <AppIcon icon={BubbleChatAddIcon} />
               Review this coffee
             </div>
             <input name="coffeeId" type="hidden" value={coffee.id} />
             <input name="slug" type="hidden" value={slug} />
-            <Field className="mb-3 gap-1">
+            <Field className="mb-3 gap-1.5">
               <FieldLabel className="sr-only">Review note</FieldLabel>
               <Textarea
-                className="min-h-24 resize-y rounded-lg border border-stone-950/10 bg-white p-3 text-sm outline-none focus:border-rose-500 focus:ring-3 focus:ring-rose-500/15"
+                className="min-h-24 bg-card"
                 name="description"
                 placeholder="What did it taste like?"
                 required
@@ -280,25 +278,25 @@ async function CoffeeCard({
               Post review
             </SubmitButton>
           </Form>
-          <div className="rounded-lg border border-stone-950/10 bg-stone-50 p-4">
-            <div className="mb-3 flex items-center gap-2 font-semibold text-stone-950">
+          <div className="rounded-2xl border bg-muted/50 p-4">
+            <div className="mb-3 flex items-center gap-2 font-semibold">
               <AppIcon icon={StarIcon} />
               Recent notes
             </div>
             <div className="grid gap-3">
               {coffee.reviews.slice(0, 2).map((review) => (
                 <blockquote
-                  className="rounded-md bg-white p-3 text-sm leading-6 text-stone-600"
+                  className="rounded-xl bg-card p-3 text-sm leading-6 text-muted-foreground"
                   key={review.id}
                 >
                   &quot;{review.description}&quot;
-                  <span className="mt-2 block font-semibold text-stone-950">
+                  <span className="mt-2 block font-semibold text-foreground">
                     {review.score}/10
                   </span>
                 </blockquote>
               ))}
               {coffee.reviews.length === 0 ? (
-                <p className="text-sm leading-6 text-stone-600">
+                <p className="text-sm leading-6 text-muted-foreground">
                   No reviews yet. A fresh page, waiting for someone opinionated.
                 </p>
               ) : null}
@@ -335,8 +333,7 @@ async function CoffeeFavouriteButton({
       <SubmitButton
         icon={<FavouriteHeart filled={favourited} />}
         className={cn(
-          favourited &&
-            "border-rose-200 bg-rose-50 text-rose-800 hover:bg-rose-100",
+          favourited && "border-transparent bg-accent text-accent-foreground hover:bg-accent/90",
         )}
         size="sm"
         variant="outline"
@@ -367,12 +364,12 @@ function FavouriteHeart({ filled }: { filled: boolean }) {
 function CafeHeaderSkeleton() {
   return (
     <section className="mb-8 grid gap-6 lg:grid-cols-[1.08fr_.92fr]">
-      <div className="rounded-lg border border-stone-950/10 bg-white p-8">
-        <SkeletonBlock className="mb-8 h-8 w-48" />
-        <SkeletonBlock className="mb-4 h-16 max-w-2xl" />
-        <SkeletonBlock className="h-24 max-w-xl" />
+      <div className="rounded-2xl border bg-card p-8">
+        <Skeleton className="mb-8 h-8 w-48" />
+        <Skeleton className="mb-4 h-16 max-w-2xl" />
+        <Skeleton className="h-24 max-w-xl" />
       </div>
-      <SkeletonBlock className="min-h-72 rounded-lg bg-stone-300" />
+      <Skeleton className="min-h-72" />
     </section>
   );
 }
@@ -381,7 +378,7 @@ function CoffeeListSkeleton() {
   return (
     <div className="grid gap-5">
       {Array.from({ length: 2 }).map((_, index) => (
-        <SkeletonBlock className="h-96 rounded-lg" key={index} />
+        <Skeleton className="h-96" key={index} />
       ))}
     </div>
   );

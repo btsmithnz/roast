@@ -39,31 +39,32 @@ async function SignInForm({ searchParams }: { searchParams: SignInSearchParams }
         Roast
       </Link>
       <div className="mb-8">
-        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-rose-700">
+        <p className="mb-3 text-sm font-semibold uppercase tracking-[0.18em] text-muted-foreground">
           Welcome back
         </p>
-        <h1 className="text-4xl leading-tight text-stone-950">Sign in</h1>
-        <p className="mt-3 text-sm leading-6 text-stone-600">
+        <h1 className="text-4xl leading-tight font-semibold tracking-tight">Sign in</h1>
+        <p className="mt-3 text-sm leading-6 text-muted-foreground">
           Save cafes, review coffees, and keep your personal flavour map in one
           place.
         </p>
       </div>
       {params?.error ? (
-        <div className="mb-5 rounded-lg border border-rose-200 bg-rose-50 px-4 py-3 text-sm text-rose-800">
+        <div className="mb-5 rounded-xl border border-destructive/30 bg-destructive/10 px-4 py-3 text-sm text-destructive">
           {params.error}
         </div>
       ) : null}
       <Form action={signInWithEmail} className="grid gap-4">
         <input name="next" type="hidden" value={params?.next ?? "/account"} />
         <Field className="gap-2">
-          <FieldLabel className="text-stone-800">Email</FieldLabel>
+          <FieldLabel>Email</FieldLabel>
           <span className="relative">
             <AppIcon
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               icon={Mail01Icon}
             />
             <Input
               autoComplete="email"
+              className="pl-9"
               name="email"
               required
               type="email"
@@ -71,14 +72,15 @@ async function SignInForm({ searchParams }: { searchParams: SignInSearchParams }
           </span>
         </Field>
         <Field className="gap-2">
-          <FieldLabel className="text-stone-800">Password</FieldLabel>
+          <FieldLabel>Password</FieldLabel>
           <span className="relative">
             <AppIcon
-              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-stone-500"
+              className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground"
               icon={SquareLock01Icon}
             />
             <Input
               autoComplete="current-password"
+              className="pl-9"
               minLength={8}
               name="password"
               required
@@ -86,13 +88,13 @@ async function SignInForm({ searchParams }: { searchParams: SignInSearchParams }
             />
           </span>
         </Field>
-        <SubmitButton className="mt-2 h-12">
+        <SubmitButton className="mt-2 h-11" size="lg">
           Sign in
         </SubmitButton>
       </Form>
-      <p className="mt-6 text-sm text-stone-600">
+      <p className="mt-6 text-sm text-muted-foreground">
         New here?{" "}
-        <Link className="font-semibold text-stone-950 underline-offset-4 hover:underline" href="/sign-up">
+        <Link className="font-semibold text-foreground underline-offset-4 hover:underline" href="/sign-up">
           Create an account
         </Link>
       </p>
@@ -103,11 +105,11 @@ async function SignInForm({ searchParams }: { searchParams: SignInSearchParams }
 function AuthFormSkeleton() {
   return (
     <div className="w-full max-w-md">
-      <Skeleton className="mb-8 h-32 rounded-lg bg-stone-200" />
+      <Skeleton className="mb-8 h-32" />
       <div className="grid gap-4">
-        <Skeleton className="h-12 rounded-lg bg-stone-200" />
-        <Skeleton className="h-12 rounded-lg bg-stone-200" />
-        <Skeleton className="h-12 rounded-full bg-stone-300" />
+        <Skeleton className="h-12" />
+        <Skeleton className="h-12" />
+        <Skeleton className="h-12 rounded-full" />
       </div>
     </div>
   );

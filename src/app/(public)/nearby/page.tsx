@@ -14,23 +14,23 @@ export const metadata = {
 export default function NearbyPage() {
   return (
     <main>
-      <section className="border-b border-stone-950/10">
-        <div className="mx-auto grid max-w-7xl gap-7 px-4 py-8 sm:px-6 lg:py-10">
+      <section className="border-b">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:py-16">
           <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
             <div>
-              <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-stone-950/10 bg-white/70 px-3 py-1 text-sm font-semibold text-stone-700 shadow-sm">
+              <p className="mb-5 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-sm font-semibold text-muted-foreground shadow-sm">
                 <AppIcon icon={Location01Icon} />
                 Nearby
               </p>
-              <h1 className="text-5xl leading-none text-stone-950 sm:text-6xl">
+              <h1 className="max-w-3xl text-5xl leading-[0.95] font-semibold tracking-tight sm:text-6xl lg:text-7xl">
                 Coffee shops near you
               </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg">
+              <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
                 A local view of cafes, lined up from your request postcode.
               </p>
             </div>
             <Link
-              className="inline-flex items-center gap-2 text-sm font-semibold text-stone-950"
+              className="inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
               href="/"
             >
               <AppIcon icon={ArrowLeft01Icon} />
@@ -59,7 +59,7 @@ async function NearbyCafeGrid() {
 
   return (
     <div className="grid gap-4">
-      <p className="text-sm font-medium text-stone-600">
+      <p className="text-sm font-medium text-muted-foreground">
         {userPostcode
           ? `Detected postcode ${userPostcode}`
           : "Postcode unavailable for this request"}

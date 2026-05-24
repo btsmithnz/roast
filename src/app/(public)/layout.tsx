@@ -2,30 +2,41 @@ import Link from "next/link";
 import { Suspense } from "react";
 import {
   CafeIcon,
+  Location01Icon,
   UserIcon,
 } from "@hugeicons/core-free-icons";
 import { AppIcon } from "@/components/app-icon";
 import { buttonVariants } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { getCurrentSession } from "@/lib/data";
-import { cn } from "@/lib/utils";
 
 export default function PublicLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <>
-      <header className="sticky top-0 z-40 border-b border-stone-950/10 bg-background/88 backdrop-blur-xl">
-        <nav className="mx-auto flex h-16 w-full max-w-7xl items-center justify-between px-4 sm:px-6">
-          <Link className="flex items-center gap-2 font-heading text-xl" href="/">
-            <span className="grid size-9 place-items-center rounded-lg bg-primary text-primary-foreground">
+      <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur-xl">
+        <nav className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-4 sm:px-6">
+          <Link className="flex items-center gap-2 font-heading text-xl font-semibold" href="/">
+            <span className="grid size-9 place-items-center rounded-xl bg-primary text-primary-foreground">
               <AppIcon icon={CafeIcon} />
             </span>
             Roast
           </Link>
-          <Suspense fallback={<AuthButtonFallback />}>
-            <AuthButton />
-          </Suspense>
+          <div className="ml-2 hidden items-center gap-1 text-sm font-medium text-muted-foreground sm:flex">
+            <Link className="rounded-full px-3 py-1.5 transition-colors hover:bg-muted hover:text-foreground" href="/">
+              Explore
+            </Link>
+            <Link className="flex items-center gap-1.5 rounded-full px-3 py-1.5 transition-colors hover:bg-muted hover:text-foreground" href="/nearby">
+              <AppIcon icon={Location01Icon} size={16} />
+              Nearby
+            </Link>
+          </div>
+          <div className="ml-auto">
+            <Suspense fallback={<Skeleton className="h-8 w-24 rounded-full" />}>
+              <AuthButton />
+            </Suspense>
+          </div>
         </nav>
       </header>
       {children}
@@ -35,37 +46,15 @@ export default function PublicLayout({
 
 async function AuthButton() {
   const session = await getCurrentSession();
-
-  if (session?.user) {
-    return (
-      <Link
-        className={cn(buttonVariants({ variant: "default", size: "sm" }))}
-        href="/account"
-      >
-        <AppIcon icon={UserIcon} />
-        Account
-      </Link>
-    );
-  }
+  const signedIn = Boolean(session?.user);
 
   return (
     <Link
-      className={cn(buttonVariants({ variant: "default", size: "sm" }))}
-      href="/sign-in"
+      className={buttonVariants({ variant: "default", size: "sm" })}
+      href={signedIn ? "/account" : "/sign-in"}
     >
       <AppIcon icon={UserIcon} />
-      Sign in
+      {signedIn ? "Account" : "Sign in"}
     </Link>
-  );
-}
-
-function AuthButtonFallback() {
-  return (
-    <Skeleton
-      className={cn(
-        buttonVariants({ variant: "secondary", size: "sm" }),
-        "w-28 rounded-4xl",
-      )}
-    />
   );
 }

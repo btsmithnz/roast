@@ -137,7 +137,7 @@ export function CoffeeDotChart({
           </ScatterChart>
         </ChartContainer>
       </div>
-      <div className="flex items-center justify-between gap-3 text-xs text-stone-600">
+      <div className="flex items-center justify-between gap-3 text-xs text-muted-foreground">
         <span className="inline-flex items-center gap-1.5">
           <span className="size-2.5 rounded-full bg-[var(--chart-1)]" />
           Listed
@@ -161,7 +161,7 @@ function TasteMapLabel({
   return (
     <span
       className={cn(
-        "pointer-events-none absolute z-10 bg-white px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-stone-500",
+        "pointer-events-none absolute z-10 bg-card px-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-muted-foreground",
         className,
       )}
     >
@@ -184,8 +184,8 @@ function CoffeeChartTooltip({
   }
 
   return (
-    <div className="grid min-w-36 gap-1.5 rounded-lg bg-white px-3 py-2 text-xs text-stone-700 shadow-lg ring-1 ring-stone-950/10">
-      <span className="font-semibold text-stone-950">{point.label}</span>
+    <div className="grid min-w-36 gap-1.5 rounded-xl bg-popover px-3 py-2 text-xs text-popover-foreground shadow-lg ring-1 ring-border">
+      <span className="font-semibold text-foreground">{point.label}</span>
       <span>Body: {point.body}/10</span>
       <span>Brightness: {point.brightness}/10</span>
     </div>

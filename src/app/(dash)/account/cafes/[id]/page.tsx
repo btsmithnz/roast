@@ -12,15 +12,13 @@ import { createCoffee, updateCafe, updateCoffee } from "@/app/actions";
 import { AppIcon } from "@/components/app-icon";
 import { CountrySelect } from "@/components/elements/country-select";
 import { ScoreSlider } from "@/components/elements/score-slider";
-import { SkeletonBlock } from "@/components/skeletons";
+import { SubmitButton } from "@/components/elements/submit-button";
+import { TextareaField, TextField } from "@/components/elements/text-field";
 import { buttonVariants } from "@/components/ui/button";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getManagedCafeData } from "@/lib/data";
 import { cn } from "@/lib/utils";
 import Form from "next/form";
-import { SubmitButton } from "@/components/elements/submit-button";
 
 export const metadata = {
   title: "Manage cafe",
@@ -61,9 +59,9 @@ async function ManagedCafeContent({ id }: { id: string }) {
 
   return (
     <div className="grid gap-6">
-      <section className="rounded-lg border border-stone-950/10 bg-stone-950 p-6 text-stone-50 shadow-xl shadow-stone-950/15 sm:p-8">
+      <section className="rounded-2xl border bg-primary p-6 text-primary-foreground shadow-xl shadow-primary/20 sm:p-8">
         <Link
-          className="mb-7 inline-flex items-center gap-2 text-sm font-semibold text-stone-300 underline-offset-4 hover:text-white hover:underline"
+          className="mb-7 inline-flex items-center gap-2 text-sm font-semibold text-primary-foreground/70 underline-offset-4 hover:text-primary-foreground hover:underline"
           href="/account"
         >
           <AppIcon icon={ArrowLeft01Icon} size={16} />
@@ -71,13 +69,13 @@ async function ManagedCafeContent({ id }: { id: string }) {
         </Link>
         <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
           <div>
-            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-rose-300">
+            <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-primary-foreground/60">
               Cafe management
             </p>
-            <h1 className="text-5xl leading-none sm:text-6xl">
+            <h1 className="text-5xl leading-none font-semibold tracking-tight sm:text-6xl">
               {data.cafe.name}
             </h1>
-            <p className="mt-4 max-w-2xl text-sm leading-6 text-stone-300">
+            <p className="mt-4 max-w-2xl text-sm leading-6 text-primary-foreground/70">
               Edit the cafe profile and keep its coffee list current.
             </p>
           </div>
@@ -95,10 +93,10 @@ async function ManagedCafeContent({ id }: { id: string }) {
       </section>
 
       <div className="grid gap-6 lg:grid-cols-[.9fr_1.1fr]">
-        <section className="rounded-lg border border-stone-950/10 bg-white p-5 shadow-sm">
+        <section className="rounded-2xl border bg-card p-5 shadow-sm">
           <div className="mb-5 flex items-center gap-2">
             <AppIcon icon={CafeIcon} />
-            <h2 className="text-2xl text-stone-950">Cafe profile</h2>
+            <h2 className="text-2xl font-semibold">Cafe profile</h2>
           </div>
           <Form action={updateCafe} className="grid gap-3 md:grid-cols-2">
             <input name="cafeId" type="hidden" value={data.cafe.id} />
@@ -154,29 +152,29 @@ async function ManagedCafeContent({ id }: { id: string }) {
           </Form>
         </section>
 
-        <section className="rounded-lg border border-stone-950/10 bg-white p-5 shadow-sm">
+        <section className="rounded-2xl border bg-card p-5 shadow-sm">
           <div className="mb-5 flex items-center gap-2">
             <AppIcon icon={Add01Icon} />
-            <h2 className="text-2xl text-stone-950">Add coffee</h2>
+            <h2 className="text-2xl font-semibold">Add coffee</h2>
           </div>
           <CoffeeForm cafeId={data.cafe.id} mode="create" />
         </section>
       </div>
 
-      <section className="rounded-lg border border-stone-950/10 bg-white p-5 shadow-sm">
+      <section className="rounded-2xl border bg-card p-5 shadow-sm">
         <div className="mb-5 flex items-center gap-2">
           <AppIcon icon={Coffee01Icon} />
-          <h2 className="text-2xl text-stone-950">Coffees</h2>
+          <h2 className="text-2xl font-semibold">Coffees</h2>
         </div>
         <div className="grid gap-4">
           {data.coffees.map((coffee) => (
             <article
-              className="rounded-lg border border-stone-950/10 bg-stone-50 p-4"
+              className="rounded-xl border bg-muted/50 p-4"
               key={coffee.id}
             >
               <div className="mb-4">
-                <h3 className="text-2xl text-stone-950">{coffee.name}</h3>
-                <p className="mt-1 text-sm text-stone-600">
+                <h3 className="text-2xl font-semibold">{coffee.name}</h3>
+                <p className="mt-1 text-sm text-muted-foreground">
                   {coffee.notes.length > 0
                     ? coffee.notes.join(", ")
                     : "No tasting notes yet"}
@@ -186,7 +184,7 @@ async function ManagedCafeContent({ id }: { id: string }) {
             </article>
           ))}
           {data.coffees.length === 0 ? (
-            <p className="rounded-md bg-stone-50 p-4 text-sm leading-6 text-stone-600">
+            <p className="rounded-xl bg-muted p-4 text-sm leading-6 text-muted-foreground">
               No coffees listed yet. Add the first one above.
             </p>
           ) : null}
@@ -240,7 +238,7 @@ function CoffeeForm({
         required
         value={coffee?.description ?? ""}
       />
-      <div className="grid gap-5 rounded-lg border border-stone-950/10 bg-white p-4 md:col-span-2 md:grid-cols-2">
+      <div className="grid gap-5 rounded-xl border bg-card p-4 md:col-span-2 md:grid-cols-2">
         <ScoreSlider
           defaultValue={coffee?.body ?? 5}
           fromLabel="Light"
@@ -263,74 +261,15 @@ function CoffeeForm({
   );
 }
 
-function TextField({
-  label,
-  name,
-  required,
-  type = "text",
-  value,
-  className,
-}: {
-  label: string;
-  name: string;
-  required?: boolean;
-  type?: string;
-  value?: string;
-  className?: string;
-}) {
-  const inputKey = `${name}:${value ?? ""}`;
-
-  return (
-    <Field className={cn("gap-1", className)}>
-      <FieldLabel className="text-stone-700">{label}</FieldLabel>
-      <Input
-        defaultValue={value}
-        key={inputKey}
-        name={name}
-        required={required}
-        type={type}
-      />
-    </Field>
-  );
-}
-
-function TextareaField({
-  label,
-  name,
-  required,
-  value,
-  className,
-}: {
-  label: string;
-  name: string;
-  required?: boolean;
-  value: string;
-  className?: string;
-}) {
-  const textareaKey = `${name}:${value}`;
-
-  return (
-    <Field className={cn("gap-1", className)}>
-      <FieldLabel className="text-stone-700">{label}</FieldLabel>
-      <Textarea
-        defaultValue={value}
-        key={textareaKey}
-        name={name}
-        required={required}
-      />
-    </Field>
-  );
-}
-
 function ManagedCafeSkeleton() {
   return (
     <div className="grid gap-6">
-      <SkeletonBlock className="h-64 rounded-lg bg-stone-300" />
+      <Skeleton className="h-64" />
       <div className="grid gap-6 lg:grid-cols-2">
-        <SkeletonBlock className="h-96 rounded-lg" />
-        <SkeletonBlock className="h-96 rounded-lg" />
+        <Skeleton className="h-96" />
+        <Skeleton className="h-96" />
       </div>
-      <SkeletonBlock className="h-[420px] rounded-lg" />
+      <Skeleton className="h-[420px]" />
     </div>
   );
 }

@@ -25,7 +25,7 @@ export function CountrySelect({
 
   return (
     <Field className="gap-1">
-      <FieldLabel className="text-stone-700">{label}</FieldLabel>
+      <FieldLabel>{label}</FieldLabel>
       <Select
         defaultValue={defaultValue}
         key={`${name}:${defaultValue}`}

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { Suspense } from "react";
 import {
-  AiSearchIcon,
+  SearchIcon,
   ArrowRight01Icon,
   CafeIcon,
   CoffeeBeansIcon,
@@ -19,24 +19,24 @@ export const metadata = {
 export default function LandingPage() {
   return (
     <main>
-      <section className="border-b border-stone-950/10">
-        <div className="mx-auto grid max-w-7xl gap-7 px-4 py-8 sm:px-6 lg:py-10">
+      <section className="border-b">
+        <div className="mx-auto grid max-w-7xl gap-8 px-4 py-12 sm:px-6 lg:py-16">
           <div className="flex flex-col justify-between gap-5 lg:flex-row lg:items-end">
             <div>
-              <p className="mb-5 inline-flex items-center gap-2 rounded-full border border-stone-950/10 bg-white/70 px-3 py-1 text-sm font-semibold text-stone-700 shadow-sm">
-                <AppIcon icon={AiSearchIcon} />
+              <p className="mb-5 inline-flex items-center gap-2 rounded-full border bg-card px-3 py-1 text-sm font-semibold text-muted-foreground shadow-sm">
+                <AppIcon icon={SearchIcon} />
                 Explore
               </p>
-              <h1 className="text-5xl leading-none text-stone-950 sm:text-6xl">
-                Coffee shops
+              <h1 className="max-w-3xl text-5xl leading-[0.95] font-semibold tracking-tight sm:text-6xl lg:text-7xl">
+                Find your kind of coffee shop.
               </h1>
-              <p className="mt-4 max-w-2xl text-base leading-7 text-stone-700 sm:text-lg">
+              <p className="mt-5 max-w-2xl text-base leading-7 text-muted-foreground sm:text-lg">
                 Browse cafes by atmosphere, coffees, tasting notes, and what
                 other coffee people are saying.
               </p>
             </div>
             <Link
-              className="inline-flex items-center gap-2 text-sm font-semibold text-stone-950"
+              className="inline-flex items-center gap-2 text-sm font-semibold underline-offset-4 hover:underline"
               href="/account"
             >
               Own a cafe?
@@ -52,8 +52,8 @@ export default function LandingPage() {
         </div>
       </section>
 
-      <section className="border-b border-stone-950/10 bg-white/55">
-        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-8 sm:px-6 md:grid-cols-3">
+      <section className="border-b bg-muted/40">
+        <div className="mx-auto grid max-w-7xl gap-4 px-4 py-12 sm:px-6 md:grid-cols-3">
           <FeatureCard
             copy="See whether a place is quiet, social, fast, design-heavy, or built for lingering."
             icon={CafeIcon}
@@ -85,12 +85,12 @@ function FeatureCard({
   icon: typeof CafeIcon;
 }) {
   return (
-    <div className="rounded-lg border border-stone-950/10 bg-white p-5">
-      <span className="mb-5 grid size-10 place-items-center rounded-lg bg-secondary text-secondary-foreground">
+    <div className="rounded-2xl border bg-card p-6">
+      <span className="mb-5 grid size-10 place-items-center rounded-xl bg-secondary text-secondary-foreground">
         <AppIcon icon={icon} />
       </span>
-      <h2 className="text-xl text-stone-950">{title}</h2>
-      <p className="mt-2 text-sm leading-6 text-stone-600">{copy}</p>
+      <h2 className="text-xl font-semibold">{title}</h2>
+      <p className="mt-2 text-sm leading-6 text-muted-foreground">{copy}</p>
     </div>
   );
 }

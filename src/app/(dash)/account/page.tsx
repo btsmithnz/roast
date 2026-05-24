@@ -11,15 +11,12 @@ import {
 import { createCafe } from "@/app/actions";
 import { AppIcon } from "@/components/app-icon";
 import { CountrySelect } from "@/components/elements/country-select";
-import { SkeletonBlock } from "@/components/skeletons";
-import { Field, FieldLabel } from "@/components/ui/field";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
+import { SubmitButton } from "@/components/elements/submit-button";
+import { TextareaField, TextField } from "@/components/elements/text-field";
+import { Skeleton } from "@/components/ui/skeleton";
 import { getAccountData } from "@/lib/data";
 import { initials } from "@/lib/format";
-import { cn } from "@/lib/utils";
 import Form from "next/form";
-import { SubmitButton } from "@/components/elements/submit-button";
 
 export const metadata = {
   title: "Your account",
@@ -28,11 +25,11 @@ export const metadata = {
 export default function AccountPage() {
   return (
     <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
-      <section className="mb-8 rounded-lg border border-stone-950/10 bg-stone-950 p-6 text-stone-50 shadow-xl shadow-stone-950/15 sm:p-8">
-        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-rose-300">
+      <section className="mb-8 rounded-2xl border bg-primary p-6 text-primary-foreground shadow-xl shadow-primary/20 sm:p-8">
+        <p className="mb-4 text-sm font-semibold uppercase tracking-[0.18em] text-primary-foreground/60">
           Your coffee desk
         </p>
-        <h1 className="max-w-3xl text-5xl leading-none sm:text-6xl">
+        <h1 className="max-w-3xl text-5xl leading-none font-semibold tracking-tight sm:text-6xl">
           Favourites, reviews, and cafes you manage.
         </h1>
       </section>
@@ -53,14 +50,14 @@ async function AccountContent() {
   return (
     <div className="grid gap-6 lg:grid-cols-[.82fr_1.18fr]">
       <aside className="grid content-start gap-6">
-        <section className="rounded-lg border border-stone-950/10 bg-white p-5 shadow-sm">
+        <section className="rounded-2xl border bg-card p-5 shadow-sm">
           <div className="mb-5 flex items-center gap-3">
-            <div className="grid size-12 place-items-center rounded-lg bg-primary text-lg font-bold text-primary-foreground">
+            <div className="grid size-12 place-items-center rounded-xl bg-primary text-lg font-bold text-primary-foreground">
               {initials(data.user.name)}
             </div>
             <div>
-              <h2 className="text-2xl text-stone-950">{data.user.name}</h2>
-              <p className="text-sm text-stone-600">{data.user.email}</p>
+              <h2 className="text-2xl font-semibold">{data.user.name}</h2>
+              <p className="text-sm text-muted-foreground">{data.user.email}</p>
             </div>
           </div>
           <div className="grid grid-cols-3 gap-2 text-center">
@@ -73,15 +70,15 @@ async function AccountContent() {
           </div>
         </section>
 
-        <section className="rounded-lg border border-stone-950/10 bg-white p-5 shadow-sm">
+        <section className="rounded-2xl border bg-card p-5 shadow-sm">
           <div className="mb-4 flex items-center gap-2">
             <AppIcon icon={FavouriteIcon} />
-            <h2 className="text-2xl text-stone-950">Favourites</h2>
+            <h2 className="text-2xl font-semibold">Favourites</h2>
           </div>
           <div className="grid gap-3">
             {data.favouriteCafes.map((cafe) => (
               <Link
-                className="rounded-md border border-stone-950/10 p-3 text-sm font-semibold text-stone-800 transition hover:bg-stone-50"
+                className="rounded-xl border p-3 text-sm font-semibold transition-colors hover:bg-muted"
                 href={`/cafes/${cafe.slug}`}
                 key={cafe.id}
               >
@@ -90,11 +87,11 @@ async function AccountContent() {
             ))}
             {data.favouriteCoffees.map(({ coffee, cafe }) => (
               <Link
-                className="rounded-md border border-stone-950/10 p-3 text-sm text-stone-700 transition hover:bg-stone-50"
+                className="rounded-xl border p-3 text-sm text-muted-foreground transition-colors hover:bg-muted"
                 href={`/cafes/${cafe.slug}`}
                 key={coffee.id}
               >
-                <span className="block font-semibold text-stone-950">
+                <span className="block font-semibold text-foreground">
                   {coffee.name}
                 </span>
                 {cafe.name}
@@ -102,7 +99,7 @@ async function AccountContent() {
             ))}
             {data.favouriteCafes.length === 0 &&
             data.favouriteCoffees.length === 0 ? (
-              <p className="rounded-md bg-stone-50 p-3 text-sm leading-6 text-stone-600">
+              <p className="rounded-xl bg-muted p-3 text-sm leading-6 text-muted-foreground">
                 No favourites yet. Browse cafes and save what sounds like your
                 next good decision.
               </p>
@@ -112,10 +109,10 @@ async function AccountContent() {
       </aside>
 
       <div className="grid gap-6">
-        <section className="rounded-lg border border-stone-950/10 bg-white p-5 shadow-sm">
+        <section className="rounded-2xl border bg-card p-5 shadow-sm">
           <div className="mb-5 flex items-center gap-2">
             <AppIcon icon={CafeIcon} />
-            <h2 className="text-2xl text-stone-950">Create a cafe</h2>
+            <h2 className="text-2xl font-semibold">Create a cafe</h2>
           </div>
           <Form action={createCafe} className="grid gap-3 md:grid-cols-2">
             <TextField label="Cafe name" name="name" required />
@@ -130,14 +127,12 @@ async function AccountContent() {
               name="image"
               className="md:col-span-2"
             />
-            <Field className="gap-1 md:col-span-2">
-              <FieldLabel className="text-stone-700">Description</FieldLabel>
-              <Textarea
-                className="min-h-24 rounded-lg border border-stone-950/10 bg-stone-50 p-3 text-sm outline-none focus:border-rose-500 focus:ring-3 focus:ring-rose-500/15"
-                name="description"
-                required
-              />
-            </Field>
+            <TextareaField
+              className="md:col-span-2"
+              label="Description"
+              name="description"
+              required
+            />
             <SubmitButton
               icon={<AppIcon icon={Add01Icon} />}
               className="md:col-span-2"
@@ -147,34 +142,34 @@ async function AccountContent() {
           </Form>
         </section>
 
-        <section className="rounded-lg border border-stone-950/10 bg-white p-5 shadow-sm">
+        <section className="rounded-2xl border bg-card p-5 shadow-sm">
           <div className="mb-5 flex items-center gap-2">
             <AppIcon icon={CafeIcon} />
-            <h2 className="text-2xl text-stone-950">Managed cafes</h2>
+            <h2 className="text-2xl font-semibold">Managed cafes</h2>
           </div>
           <div className="grid gap-4">
             {data.ownedCafes.map((cafe) => (
               <article
-                className="flex flex-col justify-between gap-4 rounded-lg border border-stone-950/10 bg-stone-50 p-4 sm:flex-row sm:items-center"
+                className="flex flex-col justify-between gap-4 rounded-xl border bg-muted/50 p-4 sm:flex-row sm:items-center"
                 key={cafe.id}
               >
                 <div>
-                  <h3 className="text-2xl text-stone-950">{cafe.name}</h3>
-                  <p className="text-sm text-stone-600">
+                  <h3 className="text-2xl font-semibold">{cafe.name}</h3>
+                  <p className="text-sm text-muted-foreground">
                     {cafe.suburb}
                     {cafe.state ? `, ${cafe.state}` : ""}
                   </p>
                 </div>
                 <div className="flex flex-wrap gap-2">
                   <Link
-                    className="inline-flex items-center gap-1.5 text-sm font-semibold text-stone-950 underline-offset-4 hover:underline"
+                    className="inline-flex items-center gap-1.5 text-sm font-semibold underline-offset-4 hover:underline"
                     href={`/account/cafes/${cafe.id}`}
                   >
                     Manage
                     <AppIcon icon={ArrowRight01Icon} size={15} />
                   </Link>
                   <Link
-                    className="text-sm font-semibold text-stone-600 underline-offset-4 hover:text-stone-950 hover:underline"
+                    className="text-sm font-semibold text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
                     href={`/cafes/${cafe.slug}`}
                   >
                     View page
@@ -183,40 +178,38 @@ async function AccountContent() {
               </article>
             ))}
             {data.ownedCafes.length === 0 ? (
-              <p className="rounded-md bg-stone-50 p-4 text-sm leading-6 text-stone-600">
+              <p className="rounded-xl bg-muted p-4 text-sm leading-6 text-muted-foreground">
                 Create your first cafe above, then manage its coffees from here.
               </p>
             ) : null}
           </div>
         </section>
 
-        <section className="rounded-lg border border-stone-950/10 bg-white p-5 shadow-sm">
+        <section className="rounded-2xl border bg-card p-5 shadow-sm">
           <div className="mb-5 flex items-center gap-2">
             <AppIcon icon={StarIcon} />
-            <h2 className="text-2xl text-stone-950">Your reviews</h2>
+            <h2 className="text-2xl font-semibold">Your reviews</h2>
           </div>
           <div className="grid gap-3">
             {data.reviews.map(({ review, coffee, cafe }) => (
               <Link
-                className="rounded-md border border-stone-950/10 p-4 transition hover:bg-stone-50"
+                className="rounded-xl border p-4 transition-colors hover:bg-muted"
                 href={`/cafes/${cafe.slug}`}
                 key={review.id}
               >
                 <div className="mb-2 flex items-center justify-between gap-3">
-                  <span className="font-semibold text-stone-950">
-                    {coffee.name}
-                  </span>
-                  <span className="rounded-full bg-rose-100 px-2.5 py-1 text-xs font-semibold text-rose-800">
+                  <span className="font-semibold">{coffee.name}</span>
+                  <span className="rounded-full bg-accent px-2.5 py-1 text-xs font-semibold text-accent-foreground">
                     {review.score}/10
                   </span>
                 </div>
-                <p className="text-sm leading-6 text-stone-600">
+                <p className="text-sm leading-6 text-muted-foreground">
                   {review.description}
                 </p>
               </Link>
             ))}
             {data.reviews.length === 0 ? (
-              <p className="rounded-md bg-stone-50 p-4 text-sm leading-6 text-stone-600">
+              <p className="rounded-xl bg-muted p-4 text-sm leading-6 text-muted-foreground">
                 Your coffee reviews will appear here after you post one from a
                 cafe page.
               </p>
@@ -230,58 +223,22 @@ async function AccountContent() {
 
 function Metric({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-md bg-stone-50 px-3 py-4">
-      <span className="block font-heading text-2xl text-stone-950">
-        {value}
-      </span>
-      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-stone-500">
+    <div className="rounded-xl bg-muted px-3 py-4">
+      <span className="block font-heading text-2xl font-semibold">{value}</span>
+      <span className="text-xs font-semibold uppercase tracking-[0.12em] text-muted-foreground">
         {label}
       </span>
     </div>
   );
 }
 
-function TextField({
-  label,
-  name,
-  required,
-  type = "text",
-  value,
-  min,
-  max,
-  className,
-}: {
-  label: string;
-  name: string;
-  required?: boolean;
-  type?: string;
-  value?: string;
-  min?: number;
-  max?: number;
-  className?: string;
-}) {
-  return (
-    <Field className={cn("gap-1", className)}>
-      <FieldLabel className="text-stone-700">{label}</FieldLabel>
-      <Input
-        defaultValue={value}
-        max={max}
-        min={min}
-        name={name}
-        required={required}
-        type={type}
-      />
-    </Field>
-  );
-}
-
 function AccountSkeleton() {
   return (
     <div className="grid gap-6 lg:grid-cols-[.82fr_1.18fr]">
-      <SkeletonBlock className="h-[520px] rounded-lg" />
+      <Skeleton className="h-[520px]" />
       <div className="grid gap-6">
-        <SkeletonBlock className="h-80 rounded-lg" />
-        <SkeletonBlock className="h-96 rounded-lg" />
+        <Skeleton className="h-80" />
+        <Skeleton className="h-96" />
       </div>
     </div>
   );
