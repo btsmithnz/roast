@@ -11,6 +11,8 @@ const nextConfig: NextConfig = {
     ],
   },
   async rewrites() {
+    // Serve markdown optimised variants of pages for agents
+    //  - Rewrite .md and accept:text/markdown
     return [
       {
         source: "/cafes/:path",

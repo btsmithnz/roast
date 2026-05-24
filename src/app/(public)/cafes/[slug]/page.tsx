@@ -47,6 +47,9 @@ export async function generateMetadata({
   };
 }
 
+// Generate static renders at build time. We initially wouldn't have a large
+// number of cafes so this is fine, and the cache rules are configured
+// on each page.
 export async function generateStaticParams() {
   return getCafeStaticParams();
 }
@@ -175,12 +178,13 @@ function CafeHeader({ cafe }: { cafe: CafeView }) {
       <div className="overflow-hidden rounded-2xl border bg-primary text-primary-foreground shadow-xl shadow-primary/20">
         {cafe.image ? (
           <div className="relative min-h-72 bg-primary/80 sm:min-h-80">
+            {/* Next.js Image creates optimised variants for different device sizes.
+            As this is above the fold, we treat it as priority.  */}
             <Image
               alt={`${cafe.name} cafe`}
               className="object-cover"
               fill
               priority
-              sizes="(max-width: 1024px) 100vw, 46vw"
               src={cafe.image}
             />
           </div>

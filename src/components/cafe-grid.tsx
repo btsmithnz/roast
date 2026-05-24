@@ -110,11 +110,12 @@ function CafeCardImage({
 
   return (
     <div className="relative size-14 overflow-hidden rounded-xl bg-muted">
+      {/* Next.js Image creates optimised variants for different devices. As this isn't in the
+      header, we don't need it to be priority (lazy load once scrolled into view). */}
       <Image
         alt=""
         className="object-cover"
         fill
-        sizes="56px"
         src={image}
       />
     </div>

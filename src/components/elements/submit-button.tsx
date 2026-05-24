@@ -9,6 +9,10 @@ type Props = ButtonProps & {
   icon?: ReactNode;
 };
 
+/**
+ * SubmitButton uses the form submission status to show a loading indicator
+ * while the form is submitting.
+ */
 export function SubmitButton({ icon, children, disabled, ...props }: Props) {
   const status = useFormStatus();
 

@@ -92,6 +92,8 @@ async function readCafeTables() {
 export async function getPublicCafeSummaries() {
   "use cache";
   cacheLife("minutes");
+  // Cache the database response on the server to reduce response times and
+  // reduce database load.
   cacheTag("cafes");
 
   const cafeViews = await readCafeTables();
@@ -128,6 +130,8 @@ export async function getNearbyCafeSummaries(postcode: string | null) {
 export async function getCafePageData(slug: string) {
   "use cache";
   cacheLife("minutes");
+  // Cache the database response on the server to reduce response times and
+  // reduce database load.
   cacheTag("cafes", `cafe:${slug}`);
 
   const cafeViews = await readCafeTables();
