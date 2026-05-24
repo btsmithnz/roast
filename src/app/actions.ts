@@ -2,7 +2,7 @@
 
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
-import { revalidatePath, revalidateTag } from "next/cache";
+import { refresh, revalidatePath, revalidateTag } from "next/cache";
 import { and, eq } from "drizzle-orm";
 import { db } from "@/db";
 import { auth } from "@/lib/auth";
@@ -125,11 +125,8 @@ export async function toggleCafeFavourite(formData: FormData) {
     await db.insert(favouriteCafes).values({ userId: user.id, cafeId });
   }
 
-  const slugs = await getCafeSlugsByIds([cafeId]);
-
   revalidatePath("/account");
-  revalidateCafePath(slugs.get(cafeId) ?? "");
-  revalidateTag("cafes", "max");
+  refresh();
 }
 
 export async function toggleCoffeeFavourite(formData: FormData) {
@@ -169,11 +166,8 @@ export async function toggleCoffeeFavourite(formData: FormData) {
     await db.insert(favouriteCoffees).values({ userId: user.id, coffeeId });
   }
 
-  const slugs = await getCafeSlugsByIds([coffee.cafeId]);
-
   revalidatePath("/account");
-  revalidateCafePath(slugs.get(coffee.cafeId) ?? "");
-  revalidateTag("cafes", "max");
+  refresh();
 }
 
 export async function createCoffeeReview(formData: FormData) {

@@ -22,6 +22,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Textarea } from "@/components/ui/textarea";
 import {
   getCafePageData,
+  getCafeStaticParams,
   getCurrentSession,
   isCafeFavourited,
   isCoffeeFavourited,
@@ -46,34 +47,101 @@ export async function generateMetadata({
   };
 }
 
-export default function CafePage({
+export async function generateStaticParams() {
+  return getCafeStaticParams();
+}
+
+export default async function CafePage({
   params,
 }: {
   params: Promise<{ slug: string }>;
 }) {
-  return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
-      <Suspense fallback={<CafeHeaderSkeleton />}>
-        {params.then(({ slug }) => (
-          <CafeHeader slug={slug} />
-        ))}
-      </Suspense>
-      <Suspense fallback={<CoffeeListSkeleton />}>
-        {params.then(({ slug }) => (
-          <CafeCoffees slug={slug} />
-        ))}
-      </Suspense>
-    </main>
-  );
-}
-
-async function CafeHeader({ slug }: { slug: string }) {
+  const { slug } = await params;
   const cafe = await getCafePageData(slug);
 
   if (!cafe) {
     notFound();
   }
 
+  const jsonLd = getCafeJsonLd(cafe);
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: serializeJsonLd(jsonLd) }}
+      />
+      <main className="mx-auto w-full max-w-7xl px-4 py-10 sm:px-6 lg:py-14">
+        <CafeHeader cafe={cafe} />
+        <CafeCoffees cafe={cafe} />
+      </main>
+    </>
+  );
+}
+
+function getCafeJsonLd(cafe: CafeView) {
+  const reviewCount = cafe.coffees.reduce(
+    (total, coffee) => total + coffee.reviewCount,
+    0,
+  );
+  const coffeeItems = cafe.coffees.map((coffee) => ({
+    "@type": "MenuItem",
+    name: coffee.name,
+    ...(coffee.description ? { description: coffee.description } : {}),
+    ...(coffee.notes.length > 0 ? { keywords: coffee.notes.join(", ") } : {}),
+    ...(coffee.avgScore !== null && coffee.reviewCount > 0
+      ? { aggregateRating: getAggregateRating(coffee.avgScore, coffee.reviewCount) }
+      : {}),
+  }));
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "CafeOrCoffeeShop",
+    name: cafe.name,
+    ...(cafe.description ? { description: cafe.description } : {}),
+    ...(cafe.image ? { image: cafe.image } : {}),
+    address: {
+      "@type": "PostalAddress",
+      streetAddress: [cafe.addressLine1, cafe.addressLine2].filter(Boolean).join(", "),
+      addressLocality: cafe.suburb,
+      ...(cafe.state ? { addressRegion: cafe.state } : {}),
+      postalCode: cafe.postcode,
+      addressCountry: cafe.country,
+    },
+    ...(cafe.avgScore !== null && reviewCount > 0
+      ? { aggregateRating: getAggregateRating(cafe.avgScore, reviewCount) }
+      : {}),
+    ...(coffeeItems.length > 0
+      ? {
+          hasMenu: {
+            "@type": "Menu",
+            name: `${cafe.name} coffees`,
+            hasMenuSection: {
+              "@type": "MenuSection",
+              name: "Coffee",
+              hasMenuItem: coffeeItems,
+            },
+          },
+        }
+      : {}),
+  };
+}
+
+function getAggregateRating(ratingValue: number, reviewCount: number) {
+  return {
+    "@type": "AggregateRating",
+    ratingValue: Number(ratingValue.toFixed(1)),
+    bestRating: 10,
+    worstRating: 1,
+    reviewCount,
+  };
+}
+
+function serializeJsonLd(jsonLd: unknown) {
+  return JSON.stringify(jsonLd).replace(/</g, "\\u003c");
+}
+
+function CafeHeader({ cafe }: { cafe: CafeView }) {
   return (
     <section className="mb-8 grid gap-6 lg:grid-cols-[1.08fr_.92fr]">
       <div className="rounded-2xl border bg-card p-6 shadow-sm sm:p-8">
@@ -168,13 +236,7 @@ async function CafeFavouriteButton({ cafe }: { cafe: CafeView }) {
   );
 }
 
-async function CafeCoffees({ slug }: { slug: string }) {
-  const cafe = await getCafePageData(slug);
-
-  if (!cafe) {
-    notFound();
-  }
-
+function CafeCoffees({ cafe }: { cafe: CafeView }) {
   return (
     <section>
       <div className="mb-6 flex items-end justify-between gap-4">
@@ -200,7 +262,7 @@ async function CafeCoffees({ slug }: { slug: string }) {
   );
 }
 
-async function CoffeeCard({
+function CoffeeCard({
   coffee,
   slug,
 }: {
@@ -358,28 +420,5 @@ function FavouriteHeart({ filled }: { filled: boolean }) {
     >
       <path d="M12 21s-7.5-4.6-9.4-9.2C1.2 8.4 3.3 5 6.9 5c2 0 3.4 1.1 4.1 2.1C11.7 6.1 13.1 5 15.1 5c3.6 0 5.7 3.4 4.3 6.8C17.5 16.4 12 21 12 21Z" />
     </svg>
-  );
-}
-
-function CafeHeaderSkeleton() {
-  return (
-    <section className="mb-8 grid gap-6 lg:grid-cols-[1.08fr_.92fr]">
-      <div className="rounded-2xl border bg-card p-8">
-        <Skeleton className="mb-8 h-8 w-48" />
-        <Skeleton className="mb-4 h-16 max-w-2xl" />
-        <Skeleton className="h-24 max-w-xl" />
-      </div>
-      <Skeleton className="min-h-72" />
-    </section>
-  );
-}
-
-function CoffeeListSkeleton() {
-  return (
-    <div className="grid gap-5">
-      {Array.from({ length: 2 }).map((_, index) => (
-        <Skeleton className="h-96" key={index} />
-      ))}
-    </div>
   );
 }

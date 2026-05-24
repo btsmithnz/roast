@@ -135,6 +135,14 @@ export async function getCafePageData(slug: string) {
   return cafeViews.find((cafe) => cafe.slug === slug) ?? null;
 }
 
+export async function getCafeStaticParams() {
+  const rows = await db
+    .select({ name: cafes.name })
+    .from(cafes)
+    .orderBy(cafes.name);
+  return rows.map((cafe) => ({ slug: slugify(cafe.name) }));
+}
+
 export async function getCurrentSession() {
   const requestHeaders = await headers();
   return auth.api.getSession({

@@ -9,6 +9,14 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return [
+      {
+        source: "/cafes/:path.md",
+        destination: "/cafes/md/:path",
+      },
+    ];
+  },
 };
 
 export default nextConfig;
