@@ -1,8 +1,6 @@
-import { text } from "drizzle-orm/pg-core";
-import { serial } from "drizzle-orm/pg-core";
-import { pgTable } from "drizzle-orm/pg-core";
+import { integer, pgTable, serial, text } from "drizzle-orm/pg-core";
+import type { CountryCode } from "@/lib/countries";
 import { user } from "./better-auth";
-import { integer } from "drizzle-orm/pg-core";
 
 export const cafes = pgTable("cafes", {
   id: serial("id").primaryKey(),
@@ -12,7 +10,8 @@ export const cafes = pgTable("cafes", {
   addressLine2: text("address_line_2"),
   suburb: text("suburb").notNull(),
   state: text("state"),
-  country: text("country").notNull(),
+  postcode: text("postcode"),
+  country: text("country").$type<CountryCode>().notNull(),
   userId: text("user_id")
     .notNull()
     .references(() => user.id, { onDelete: "cascade" }),
@@ -25,13 +24,19 @@ export const coffees = pgTable("coffees", {
   notes: text("notes").array().notNull().default([]),
   cafe: integer("cafe_id")
     .notNull()
-    .references(() => cafes.id, { onDelete: "set null" }),
+    .references(() => cafes.id, { onDelete: "cascade" }),
   body: integer("body").notNull(),
   brightness: integer("brightness").notNull(),
 });
 
 export const coffeeReviews = pgTable("coffee_reviews", {
-  coffeeId: integer("coffee_id").references(() => coffees.id),
+  id: serial("id").primaryKey(),
+  coffeeId: integer("coffee_id")
+    .notNull()
+    .references(() => coffees.id, { onDelete: "cascade" }),
+  userId: text("user_id")
+    .notNull()
+    .references(() => user.id, { onDelete: "cascade" }),
   description: text("note"),
   score: integer("score").notNull(),
   body: integer("body"),
@@ -44,7 +49,7 @@ export const favouriteCafes = pgTable("favourite_cafes", {
     .references(() => user.id, { onDelete: "cascade" }),
   cafeId: integer("cafe_id")
     .notNull()
-    .references(() => coffees.id),
+    .references(() => cafes.id, { onDelete: "cascade" }),
 });
 
 export const favouriteCoffees = pgTable("favourite_coffees", {
