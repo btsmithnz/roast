@@ -4,6 +4,7 @@ import {
   type CafeView,
   type CoffeeView,
 } from "@/lib/data";
+import { NextRequest } from "next/server";
 
 const markdownHeaders = {
   "content-type": "text/markdown; charset=utf-8",
@@ -13,8 +14,11 @@ export async function generateStaticParams() {
   return getCafeStaticParams();
 }
 
-export async function GET(request: Request) {
-  const slug = getSlugFromPathname(new URL(request.url).pathname);
+export async function GET(
+  _req: NextRequest,
+  ctx: RouteContext<"/cafes/md/[slug]">,
+) {
+  const { slug } = await ctx.params
 
   if (!slug) {
     return new Response("# Cafe not found\n", {
@@ -83,12 +87,14 @@ function renderCoffeeMarkdown(coffee: CoffeeView) {
     lines.push("No reviews yet.", "");
   } else {
     lines.push(
-      ...coffee.reviews.slice(0, 2).flatMap((review) => [
-        `> ${markdown(review.description, "No note provided.")}`,
-        ">",
-        `> Score: ${review.score}/10`,
-        "",
-      ]),
+      ...coffee.reviews
+        .slice(0, 2)
+        .flatMap((review) => [
+          `> ${markdown(review.description, "No note provided.")}`,
+          ">",
+          `> Score: ${review.score}/10`,
+          "",
+        ]),
     );
   }
 
@@ -113,17 +119,6 @@ function formatScore(value: number | null) {
 
 function formatNumber(value: number) {
   return value.toFixed(1).replace(/\.0$/, "");
-}
-
-function getSlugFromPathname(pathname: string) {
-  const segment = pathname.split("/").pop() ?? "";
-
-  if (!segment.endsWith(".md")) {
-    return null;
-  }
-
-  const slug = decodeURIComponent(segment.slice(0, -3));
-  return slug || null;
 }
 
 function markdown(value: string | null | undefined, fallback = "") {
